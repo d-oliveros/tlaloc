@@ -60,7 +60,7 @@ describe('Client', () => {
   });
 
   describe('Cluster Communication', function () {
-    this.timeout(30000);
+    this.timeout(120000);
 
     let cluster;
 

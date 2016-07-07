@@ -15,7 +15,7 @@ const clusterConfig = {
 };
 
 describe('Cluster', function () {
-  this.timeout(30000);
+  this.timeout(120000);
 
   describe('Single Cluster', () => {
     let cluster;
