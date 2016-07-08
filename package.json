@@ -1,62 +1,58 @@
 {
   "name": "tlaloc",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "description": "Tor proxy management cluster server",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "lint": "./node_modules/.bin/eslint ."
+    "lint": "eslint --ignore-path .gitignore .",
+    "compile": "babel -d lib src"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/d-oliveros/cloak"
+    "url": "https://github.com/d-oliveros/tlaloc"
   },
   "keywords": [
     "tor",
     "proxy",
     "socks5",
     "anonymous",
+    "cluster",
     "anonimyzer"
   ],
   "author": "David Oliveros",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/d-oliveros/cloak/issues"
+    "url": "https://github.com/d-oliveros/tlaloc/issues"
   },
-  "homepage": "https://github.com/d-oliveros/cloak",
+  "bin": {
+    "tlaloc": "bin/tlaloc"
+  },
+  "homepage": "https://github.com/d-oliveros/tlaloc",
   "devDependencies": {
+    "babel-cli": "^6.10.1",
     "babel-eslint": "^6.1.0",
-    "babel-register": "^6.9.0",
-    "babel-runtime": "^6.9.2",
-    "chai": "^3.5.0",
-    "eslint": "^2.13.1",
-    "eslint-config-airbnb-base": "^3.0.1",
-    "eslint-plugin-import": "^1.10.2",
-    "gulp": "^3.9.1",
-    "gulp-eslint": "^2.0.0",
-    "sinon": "^1.17.4",
-    "socks5-http-client": "^1.0.2",
-    "supertest": "^1.2.0"
-  },
-  "dependencies": {
-    "assert": "^1.4.1",
-    "babel-core": "^6.10.4",
     "babel-plugin-transform-runtime": "^6.9.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "eslint": "^3.0.1",
+    "eslint-config-airbnb-base": "^4.0.0",
+    "socks5-https-client": "^1.1.3",
+    "eslint-plugin-import": "^1.10.2"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.9.2",
+    "commander": "^2.9.0",
     "debug": "^2.2.0",
-    "dotenv": "^2.0.0",
-    "http-assert": "^1.2.0",
+    "http-errors": "^1.5.0",
     "lodash": "^4.13.1",
     "mkdirp": "^0.5.1",
     "ms": "^0.7.1",
     "node-uuid": "^1.4.7",
-    "promisify-node": "^0.4.0",
     "redis-pubsub-emitter": "^0.5.0",
-    "request-promise": "^3.0.0",
     "shortid": "^2.2.6",
-    "socks5-https-client": "^1.1.3",
-    "ths": "d-oliveros/node-ths",
-    "util-inspect": "^0.1.8"
+    "ths": "d-oliveros/node-ths"
   }
 }

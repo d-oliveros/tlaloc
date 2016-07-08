@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+const program = require('commander');
+const path = require('path');
+const Debug = require('debug');
+const fs = require('fs');
+const version = require('../package.json').version;
+const env = process.env;
+
+program
+  .version(version)
+  .option('-i, --instances <instances>', 'number of tor processes to run. Default: 4', parseInt)
+  .option('-d, --data-dir <dataDir>', 'data dir to use for the tor processes. Default: current dir')
+  .option('-hn, --host <host>', 'IP address or hostname of this server. Default: "127.0.0.1"')
+  .option('-p, --port <portRangeStart>', 'starting port to start binding tor on. Default: 10770')
+  .option('-rp, --redis-port <redisPort>', 'redis port. Default: 6379', parseInt)
+  .option('-rh, --redis-host <redisHost>', 'redis host. Default: "127.0.0.1"')
+  .on('--help', () => {
+    console.log('  Examples:\n');
+
+    console.log('    Start Tlaloc using a specified data dir:');
+    console.log('    $ tlaloc --data-dir ~/tordata\n');
+
+    console.log('    Use a redis pub/sub located in a remote host:');
+    console.log('    $ tlaloc -rp 6779 -rh myredis.somedomain.com\n');
+
+    console.log('    Starts with 30 Tor processes, providing 30 different random IPs:');
+    console.log('    $ tlaloc -i 30\n');
+
+    console.log('    Starts with 30 Tor processes, exposes this server hostname to clients');
+    console.log('    $ tlaloc -i 30 --host cluster1.mydomain.com\n');
+  })
+  .parse(process.argv);
+
+// defaults the data dir to TLALOC_DATADIR, /var/tmp, /tmp, or {current dir}/data
+const dataDir = program.dataDir
+  ? program.dataDir
+  : env.TLALOC_DATADIR
+    ? env.TLALOC_DATADIR
+    : fs.existsSync('/var/tmp')
+      ? '/var/tmp/tordata'
+      : fs.exists('/tmp')
+        ? '/tmp/tordata'
+        : 'tordata';
+
+// get the parameters from the CLI options
+const params = {
+  dataDir: path.resolve(process.cwd(), dataDir),
+  torInstances: program.instances || env.TLALOC_TOR_INSTANCES || 4,
+  host: program.host || env.TLALOC_HOST || '127.0.0.1',
+  portRangeStart: program.port || env.TLALOC_PORT || 10770,
+  redis: {
+    port: program.redisPort || env.TLALOC_REDIS_PORT || 6379,
+    host: program.redisHost || env.TLALOC_REDIS_HOST || '127.0.0.1'
+  }
+};
+
+console.log('\n\n' +
+  '   ▄▄▄▄▀ █    ██   █    ████▄ ▄█▄    \n' +
+  '▀▀▀ █    █    █ █  █    █   █ █▀ ▀▄  \n' +
+  '    █    █    █▄▄█ █    █   █ █   ▀  \n' +
+  '   █     ███▄ █  █ ███▄ ▀████ █▄  ▄▀ \n' +
+  '  ▀          ▀   █     ▀      ▀███▀  \n' +
+  '                █                    \n' +
+  '               ▀                     \n'
+);
+
+console.log('Starting Tor Cluster server.\n');
+console.log('Params:', JSON.stringify(params, null, 2), '\n');
+console.log('Run "tlaloc --help" to see available options\n');
+
+Debug.enable('tlaloc:cluster*');
+
+// requires the es6+ src code with babel, or the es5 version in /lib
+var libdir = path.resolve(__dirname, '..', 'src'); // eslint-disable-line
+
+if (!fs.existsSync(libdir)) {
+  libdir = path.resolve(__dirname, '..', 'lib');
+} else {
+  require('babel-register'); // eslint-disable-line global-require
+}
+
+const Cluster = require(`${libdir}/cluster`).default;
+
+const cluster = new Cluster(params);
+
+cluster
+  .connect()
+  .catch((err) => console.error(err.stack));

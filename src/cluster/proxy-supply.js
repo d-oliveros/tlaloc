@@ -31,7 +31,7 @@ export default class ProxySupply {
     this.onHeartbeat = ::this.onHeartbeat;
     this.onTimeout = ::this.onTimeout;
     this.unlink = ::this.unlink;
-    this.debug = createDebugger(`tlaloc:proxySupply:${this.endpoint}`);
+    this.debug = createDebugger(`tlaloc:cluster:proxySupply:${this.endpoint}`);
   }
 
   async connect({ host, port }) {

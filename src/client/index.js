@@ -2,7 +2,6 @@ import ms from 'ms';
 import createError from 'http-errors';
 import shortid from 'shortid';
 import assert from 'assert';
-import inspect from 'util-inspect';
 import createDebugger from 'debug';
 import { isObject } from 'lodash';
 import { createRedisPubSub } from '../pubsub';
@@ -21,6 +20,11 @@ const PROXY_REQUEST_INTERVAL = ms('1s');
 const PROXY_REQUEST_TIMEOUT = ms('20s');
 const PROXY_HEARTBEAT_INTERVAL = ms('1s');
 const PROXY_HEARTBEAT_TTL = ms('5s');
+
+const defaultRedisConfig = {
+  host: '127.0.0.1',
+  port: 6379
+};
 
 export default class Client {
   constructor(config = {}) {
@@ -47,7 +51,7 @@ export default class Client {
     this.debug('Creating new client');
   }
 
-  async connect(redisConfig) {
+  async connect(redisConfig = defaultRedisConfig) {
     assert(isObject(redisConfig), 'Invalid redis config');
     assert(!this.started, 'Client already started');
 
@@ -100,7 +104,7 @@ export default class Client {
   }
 
   onProxyLink(data) {
-    this.debug(`Proxy link from ${inspect(data)}`);
+    this.debug('Proxy link from', data);
     this.removeHandlers();
 
     this.proxy = new ProxyLink({

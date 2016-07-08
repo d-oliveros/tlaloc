@@ -5,6 +5,9 @@ import createError from 'http-errors';
 import constants from '../src/constants';
 import Client from '../src/client';
 import Cluster from '../src/cluster';
+import getProxyIp from './util/get-proxy-ip';
+import getOwnIp from './util/get-own-ip';
+import ipRegex from './util/ip-regex';
 
 const redisConfig = {
   host: '127.0.0.1',
@@ -30,7 +33,7 @@ describe('Client', () => {
       expect(client.pubsub).to.equal(null);
       expect(client.started).to.equal(false);
 
-      const promise = client.connect(redisConfig);
+      const promise = client.connect();
 
       expect(client.started).to.equal(true);
       expect(client.pubsub).to.equal(null);
@@ -142,7 +145,7 @@ describe('Client', () => {
         heartbeatTTL: 300
       });
 
-      await client.connect(redisConfig);
+      await client.connect();
 
       const proxy = await client.getProxy();
 
@@ -171,6 +174,22 @@ describe('Client', () => {
 
       // first proxy has been dropped, second client should get proxy
       await client2.getProxy();
+    });
+
+    it('should have a unique IP and make requests through tor proxies', async () => {
+      cluster = new Cluster({ ...clusterConfig, torInstances: 1 });
+      await cluster.connect();
+
+      const client1 = new Client();
+      await client1.connect(redisConfig);
+      const proxy1 = await client1.getProxy();
+
+      const ownIp = await getOwnIp();
+      const proxyIp = await getProxyIp(proxy1.endpoint);
+
+      expect(ipRegex.test(proxyIp));
+      expect(ipRegex.test(ownIp));
+      expect(proxyIp !== ownIp);
     });
   });
 });

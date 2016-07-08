@@ -45,7 +45,7 @@ const prototype = {
     assert(event && fn);
     debug(`register onMessage "${event}"`);
 
-    let wrappedFn = function(data) {
+    let wrappedFn = function (data) {
       debug('data', data);
       if (data.to !== this.id) return;
       fn.apply(this, arguments);
@@ -61,7 +61,7 @@ const prototype = {
   onceMessage(event, fn) {
     assert(event && fn);
     debug(`register onceMessage "${event}"`);
-    let wrappedFn = function(data) {
+    let wrappedFn = function (data) {
       if (data.to !== this.id) return;
       this.offMessage(event, fn);
       this.removeListener(event, wrappedFn);

@@ -1,11 +1,8 @@
 import { times, find, reduce, defaults, isString, isObject } from 'lodash';
-import inspect from 'util-inspect';
 import assert from 'assert';
 import THSInstance from './ths-instance';
 
 const debug = require('debug')('tlaloc:cluster');
-const TOR_INSTANCES = parseInt(process.env.TOR_GATEWAYS, 10);
-const PORT_RANGE_START = parseInt(process.env.PORT_RANGE_START, 10);
 
 /**
  * Creates a pool of tor hidden service instances.
@@ -19,8 +16,8 @@ export default class THSCluster {
     assert(isObject(params.redis), 'Invalid redis config');
 
     defaults(params, {
-      torInstances: TOR_INSTANCES,
-      portRangeStart: PORT_RANGE_START,
+      torInstances: 2,
+      portRangeStart: 10770,
       host: '127.0.0.1'
     });
 
@@ -37,13 +34,13 @@ export default class THSCluster {
     debug('Creating cluster', this.config);
 
     this.instances = times(params.torInstances, (i) => {
-      const port = params.portRangeStart + i;
+      const port = parseInt(params.portRangeStart, 10) + i;
 
       return new THSInstance({
         dataDir: `${params.dataDir}/${port}`,
         port: port,
         host: params.host,
-        ctrlPort: port + params.torInstances,
+        ctrlPort: port + parseInt(params.torInstances, 10),
         redis: params.redis,
         onTorError: ::console.error,
         onTorMessage: ::console.log
@@ -103,7 +100,7 @@ export default class THSCluster {
       return list;
     }, []);
 
-    debug(`Getting services: ${inspect(list)}`);
+    debug('Getting services', list);
 
     return list;
   }
@@ -116,7 +113,7 @@ export default class THSCluster {
     this.serviceRotationIndex++;
 
     const services = this.services;
-    const port = PORT_RANGE_START + this.serviceRotationIndex;
+    const port = this.config.portRangeStart + this.serviceRotationIndex;
     let service = find(services, { name: `port_${port}` });
 
     if (!service) {

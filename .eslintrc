@@ -36,3 +36,5 @@ rules:
     - 0
   prefer-rest-params:
     - 0
+  import/no-extraneous-dependencies:
+    - 0

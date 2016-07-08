@@ -1,7 +1,7 @@
+import { expect } from 'chai';
 import ProxySupply from '../src/cluster/proxy-supply';
 import { createRedisPubSub } from '../src/pubsub';
 import constants from '../src/constants';
-import { expect } from 'chai';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 

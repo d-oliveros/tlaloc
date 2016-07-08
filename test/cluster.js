@@ -1,8 +1,10 @@
-import shttp from 'socks5-https-client';
 import path from 'path';
-import { times, uniq } from 'lodash';
+import { times, uniq, every } from 'lodash';
 import { expect } from 'chai';
 import Cluster from '../src/cluster';
+import getProxyIp from './util/get-proxy-ip';
+import getOwnIp from './util/get-own-ip';
+import ipRegex from './util/ip-regex';
 
 const clusterConfig = {
   dataDir: path.resolve(__dirname, 'data'),
@@ -68,15 +70,19 @@ describe('Cluster', function () {
       expect(ports.length).to.equal(uniq(ports).length);
     });
 
-    it('should return two different IP addresses', async () => {
+    it('should use two proxies with two different IP addresses', async () => {
       const promises = times(clusterConfig.torInstances, () => {
         const port = cluster.getPort();
-        return requestWithSocks5Proxy('http://icanhazip.com', port);
+        return getProxyIp(`127.0.0.1:${port}`);
       });
 
       const ips = await Promise.all(promises);
+      const ownIp = await getOwnIp();
 
       expect(uniq(ips).length).to.equal(parseInt(clusterConfig.torInstances, 10));
+      expect(every(ips, (ip) => ipRegex.test(ip))).to.equal(true);
+      expect(ipRegex.test(ownIp)).to.equal(true);
+      expect(every(ips, (ip) => ip !== ownIp)).to.equal(true);
     });
   });
 
@@ -95,24 +101,4 @@ describe('Cluster', function () {
       expect(clusters.every((c) => c.status.ready)).to.equal(true);
     });
   });
-
 });
-
-function requestWithSocks5Proxy(href, port) {
-  return new Promise((resolve, reject) => {
-    const params = {
-      hostname: 'api.ipify.org',
-      socksPort: port,
-      socksHost: '127.0.0.1',
-      path: '/',
-      rejectUnauthorized: false
-    };
-
-    const req = shttp.get(params, (res) => {
-      res.setEncoding('utf8');
-      res.on('readable', () => resolve(res.read()));
-    });
-
-    req.on('error', reject);
-  });
-}

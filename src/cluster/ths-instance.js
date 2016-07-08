@@ -3,7 +3,7 @@ import mkdirp from 'mkdirp';
 import { find } from 'lodash';
 import ProxySupply from './proxy-supply';
 
-const debug = require('debug')('tlaloc:thsInstance');
+const debug = require('debug')('tlaloc:cluster:thsInstance');
 
 export default class THSInstance extends THS {
   constructor({ dataDir, host, port, redis, ctrlPort, onTorError, onTorMessage }) {
