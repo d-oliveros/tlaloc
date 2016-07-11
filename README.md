@@ -1,6 +1,7 @@
 # Tlaloc
 
-![Tlaloc Dependencies](https://david-dm.org/d-oliveros/tlaloc.svg)
+[![Build Status](https://travis-ci.org/d-oliveros/tlaloc.svg?branch=master)](https://travis-ci.org/d-oliveros/tlaloc)
+[![Dependencies Status](https://david-dm.org/d-oliveros/tlaloc.svg)](https://david-dm.org/d-oliveros/tlaloc)
 
 Tor is a Node.js program that lets you create multiple tor processes across servers, and manage them at scale using a central Redis pub/sub interface.
 
