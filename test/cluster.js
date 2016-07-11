@@ -1,10 +1,13 @@
 import path from 'path';
 import { times, uniq, every } from 'lodash';
 import { expect } from 'chai';
+import { EventEmitter } from 'events';
 import Cluster from '../src/cluster';
 import getProxyIp from './util/get-proxy-ip';
 import getOwnIp from './util/get-own-ip';
 import ipRegex from './util/ip-regex';
+
+EventEmitter.defaultMaxListeners = 100;
 
 const clusterConfig = {
   dataDir: path.resolve(__dirname, 'data'),
@@ -90,7 +93,7 @@ describe('Cluster', function () {
     const clusters = [];
 
     before(async () => {
-      times(3, (i) => {
+      times(2, (i) => {
         const portRangeStart = clusterConfig.portRangeStart + ((i + 1) * 20);
         clusters.push(new Cluster({ ...clusterConfig, portRangeStart }));
       });
