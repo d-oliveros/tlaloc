@@ -1,6 +1,8 @@
 # Tlaloc
 
-Tlaloc is a decentralized Tor cluster server. It helps you create multiple tor processes across servers, and manage them at scale using a central Redis pub/sub interface.
+![Tlaloc Dependencies](https://david-dm.org/d-oliveros/tlaloc.svg)
+
+Tor is a Node.js program that lets you create multiple tor processes across servers, and manage them at scale using a central Redis pub/sub interface.
 
 It exposes a redis pub/sub communication channel for exposing available tor hidden service running in the cluster. It also lets you lock into a particular proxy, ensuring you are the only owner of that IP.
 
