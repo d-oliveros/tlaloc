@@ -1,7 +1,7 @@
 import redisPubSub from 'redis-pubsub-emitter';
 import createError from 'http-errors';
 import assert from 'assert';
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 import { isString } from 'lodash';
 import ms from 'ms';
 
