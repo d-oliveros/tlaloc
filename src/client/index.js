@@ -98,9 +98,9 @@ export default class Client {
     this.debug(`Proxy offered by ${clientId}`);
     this.removeHandlers();
     this.debug('Requesting proxy link');
-    this.pubsub.sendMessage(PROXY_LINK, clientId);
     this.pubsub.onceMessage(PROXY_LINK_DROP, this.onProxyLinkDrop);
     this.pubsub.onceMessage(PROXY_DELIVER, this.onProxyLink);
+    this.pubsub.sendMessage(PROXY_LINK, clientId);
   }
 
   onProxyLink(data) {
